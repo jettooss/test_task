@@ -3,27 +3,21 @@ import re
 import os
 import sys
 
-
 class DataProcessor:
     def __init__(self, data_file, replacement_file, output_file):
         self.data_file = data_file
         self.replacement_file = replacement_file
         self.output_file = output_file
 
-    def load_data(self, file_path):
+    def __load_data(self, file_path):
         with open(file_path) as f:
             return json.load(f)
+    def __save_data(self, data):
+        with open(self.output_file, "w") as f:
+            json.dump(data, f, ensure_ascii=False)
 
-    def process_data(self):
-        replacements = self.load_data(self.replacement_file)
-        data = self.load_data(self.data_file)
 
-        new_replacements = self.filter_and_clean_replacements(replacements)
-        new_data = self.replace_data(data, new_replacements)
-
-        self.save_data(new_data)
-
-    def filter_and_clean_replacements(self, replacements):
+    def __clean_replacements(self, replacements):
         filtered_replacements = [r for r in replacements if r["source"] is not None]
         unique_replacements = {}
 
@@ -33,7 +27,7 @@ class DataProcessor:
 
         return {k: v for k, v in sorted(unique_replacements.items(), key=lambda item: len(item[1]), reverse=True)}
 
-    def replace_data(self, data, replacements):
+    def __replace_data(self, data, replacements):
         new_data = data.copy()
 
         for rep_key, rep_value in replacements.items():
@@ -42,10 +36,22 @@ class DataProcessor:
 
         return [new_message for orig_message, new_message in zip(data, new_data) if orig_message != new_message]
 
-    def save_data(self, data):
-        with open(self.output_file, "w") as f:
-            json.dump(data, f, ensure_ascii=False)
+    def process_data(self):
+        # Загружаем данные замен из файла replacement_file
+        replacements = self.__load_data(self.replacement_file)
 
+        # Загружаем исходные данные из файла data_file
+        data = self.__load_data(self.data_file)
+
+        # Очищаем набор замен, удаляя дубликаты и значения с пустыми источниками,
+        # а также сортируем замены в порядке убывания их длины
+        new_replacements = self.__clean_replacements(replacements)
+
+        # Производим замену исходного текста в data, используя очищенные замены new_replacements
+        new_data = self.__replace_data(data, new_replacements)
+
+        # Сохраняем измененные данные в файл output_file
+        self.__save_data(new_data)
 
 def get_file_path(prompt):
     while True:
@@ -61,14 +67,18 @@ def get_file_path(prompt):
             print("\nВыход из программы")
             sys.exit()
 
-
 def program_start():
+
     data_file = get_file_path("Пожалуйста, введите путь к файлу data.json: ")
+
     replacement_file = get_file_path("Пожалуйста, введите путь к файлу replacement.json: ")
+
     output_file = input("Пожалуйста, введите имя и/или путь для файла вывода (result.json): ")
 
     processor = DataProcessor(data_file, replacement_file, output_file)
+
     processor.process_data()
+
     print("Обработка данных завершена. Результат сохранен в файле:", output_file)
 
 
