@@ -21,25 +21,27 @@ class DataProcessor:
 
 
     def __clean_replacements(self, replacements):
-        filtered_replacements = [r for r in replacements if r["source"] is not None]
         unique_replacements = {}
 
-        for replacement in filtered_replacements:
+        for replacement in reversed(replacements):
             if replacement["replacement"] not in unique_replacements:
                 unique_replacements[replacement["replacement"]] = replacement["source"]
 
-        return {k: v for k, v in sorted(unique_replacements.items(), key=lambda item: len(item[1]), reverse=True)}
-
+        return unique_replacements
     def __replace_data(self, data, replacements):
         new_data = data.copy()
 
         for rep_key, rep_value in replacements.items():
-            regex = re.compile(re.escape(rep_key))
-            new_data = [regex.sub(rep_value, message) for message in new_data]
+            if rep_value is None :
+                new_data = [item for item in new_data if item != rep_key]
+                continue
 
-        # return new_data
+            else:
+                regex = re.compile(re.escape(rep_key))
+                new_data = [regex.sub(rep_value, message) for message in new_data]
 
-        return [new_message for orig_message, new_message in zip(data, new_data) if orig_message != new_message]
+        return new_data
+
 
     def process_data(self):
         # Загружаем данные замен из файла replacement_file
@@ -85,6 +87,7 @@ def program_start(data_file, replacement_file, output_file):
 
     print("Обработка данных завершена. Результат сохранен в файле:", output_file)
     data=processor.process_data()
+    print(len(data))
 
     return    data
 

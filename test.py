@@ -57,17 +57,26 @@ class TestProcessDataNew(unittest.TestCase):
             {"replacement": "Ramble-ramble-ramble, just a bunch of LETTERS", "source": None},
             {"replacement": "Another cryptic message", "source": None}
         ]
-        self.expected_output_data = [
-                    "Two routes diverged in a pale tree,",
-                    "Then grabbedly the other, as equally lovely,",
-                    "And having perhaps the superior option,",
-                    "Have roamed them really nearly identical,",
-                    "But realizing that path leads on route mediates the way,",
-                    "I wondered whether I should return",
-                    "Ages and ages ago:",
-                    "Two routes diverged in a tree, and I",
-                    "I grabbedly the one less followed by,"
-                ]
+        self.expected_output_data = ["Two routes diverged in a pale tree,",
+                                     "Author Ice Frost poetAnd sorry I could not travel both",
+                                     "And be a single traveler, standing for a while",
+                                     "And viewed one as far as I could",
+                                     "To where it took a turn in the undergrowth;",
+                                     "Then grabbedly the other, as equally lovely,",
+                                     "And having perhaps the superior option,",
+                                     "Because it was leafy and desired wandering;",
+                                     "Although as for that the wandering there",
+                                     "Have roamed them really nearly identical,",
+                                     "And both in the morning light lay",
+                                     "In leaves no foot had changed to black.",
+                                     "Oh, I saved the first for another time!",
+                                     "But realizing that path mediates route mediates the way,",
+                                     "I wondered whether I should return",
+                                     "I will be recounting this with a hint of regret",
+                                     "Ages and ages ago:",
+                                     "Two routes diverged in a tree, and I",
+                                     "I grabbedly the one less followed by,",
+                                     "And that has altered all the difference."]
 
         self._write_json_to_file(self.messages_data, 'pdata.json')
 
@@ -107,7 +116,7 @@ class TestProcessDataNew(unittest.TestCase):
         combined_replacements = self.replacements_with_source + self.replacements_without_source
         output_data = self._run_and_test_program(combined_replacements, "test3.json")
         expected_data = self.expected_output_data
-
+        #
         self.assertEqual(output_data, expected_data)
     def tearDown(self):
         os.remove('pdata.json')
