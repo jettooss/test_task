@@ -13,6 +13,7 @@ class DataProcessor:
 
     def __load_data(self, file_path):
         with open(file_path) as f:
+            # print(file_path)
             return json.load(f)
     def __save_data(self, data):
         with open(self.output_file, "w") as f:
@@ -56,6 +57,7 @@ class DataProcessor:
 
         # Сохраняем измененные данные в файл output_file
         self.__save_data(new_data)
+        return new_data
 
 def get_file_path(prompt):
     while True:
@@ -81,13 +83,15 @@ def program_start(data_file, replacement_file, output_file):
 
     processor = DataProcessor(data_file, replacement_file, output_file)
 
-    processor.process_data()
-
     print("Обработка данных завершена. Результат сохранен в файле:", output_file)
+    data=processor.process_data()
+
+    return    data
+
 
 
 
 
 
 if __name__ == "__main__":
-    program_start()
+    program_start("data.json","replacement.json","result.json")
