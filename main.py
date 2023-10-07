@@ -2,7 +2,6 @@ import json
 import re
 import os
 import sys
-import unittest
 
 
 class DataProcessor:
@@ -88,6 +87,7 @@ def program_start(data_file, replacement_file, output_file):
 
     print("Обработка данных завершена. Результат сохранен в файле:", output_file)
     data=processor.process_data()
+
 
     return    data
 
