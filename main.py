@@ -11,16 +11,16 @@ class DataProcessor:
         self.replacement_file = replacement_file
         self.output_file = output_file
 
-    def __load_data(self, file_path):
+    def _load_data(self, file_path):
         with open(file_path) as f:
             # print(file_path)
             return json.load(f)
-    def __save_data(self, data):
+    def _save_data(self, data):
         with open(self.output_file, "w") as f:
             json.dump(data, f, ensure_ascii=False)
 
 
-    def __clean_replacements(self, replacements):
+    def _clean_replacements(self, replacements):
         unique_replacements = {}
 
         for replacement in reversed(replacements):
@@ -28,7 +28,7 @@ class DataProcessor:
                 unique_replacements[replacement["replacement"]] = replacement["source"]
 
         return unique_replacements
-    def __replace_data(self, data, replacements):
+    def _replace_data(self, data, replacements):
         new_data = data.copy()
 
         for rep_key, rep_value in replacements.items():
@@ -38,6 +38,7 @@ class DataProcessor:
 
             else:
                 regex = re.compile(re.escape(rep_key))
+                # print(regex)
                 new_data = [regex.sub(rep_value, message) for message in new_data]
 
         return new_data
@@ -45,20 +46,20 @@ class DataProcessor:
 
     def process_data(self):
         # Загружаем данные замен из файла replacement_file
-        replacements = self.__load_data(self.replacement_file)
+        replacements = self._load_data(self.replacement_file)
 
         # Загружаем исходные данные из файла data_file
-        data = self.__load_data(self.data_file)
+        data = self._load_data(self.data_file)
 
         # Очищаем набор замен, удаляя дубликаты и значения с пустыми источниками,
         # а также сортируем замены в порядке убывания их длины
-        new_replacements = self.__clean_replacements(replacements)
+        new_replacements = self._clean_replacements(replacements)
 
         # Производим замену исходного текста в data, используя очищенные замены new_replacements
-        new_data = self.__replace_data(data, new_replacements)
+        new_data = self._replace_data(data, new_replacements)
 
         # Сохраняем измененные данные в файл output_file
-        self.__save_data(new_data)
+        self._save_data(new_data)
         return new_data
 
 def get_file_path(prompt):
